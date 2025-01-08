@@ -2,32 +2,176 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="stylesheet" href="Index.css" />
-    <title>Darts Scoring</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dart Game Setup</title>
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            padding: 0;
+            font-family: Arial, sans-serif;
             margin: 0;
-            background-color: steelblue;
+            padding: 0;
+            background-color: #f8f9fa;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 10vh;
+            height: 100vh;
         }
 
-        
-        
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .button-group button {
+            padding: 3px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #28a745;
+            flex: 1 1 auto;
+            width: auto;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .button-group button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .button-group button.active:hover {
+            background-color: #007bff; /* Keep the active color on hover */
+            color: white; /* Maintain text color */
+        }
+
+        .button-group button:hover {
+            background-color: #218838;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 
 <body>
-    <h2>Darts Scoring!!</h2>
+    <div class="container">
+        <h1>Dart Game Setup</h1>
+        <form id="gameSetupForm">
+            <div class="gameList">
+                <label for="gameType">Game Type:</label>
+                <div class="button-group" id="gameButtons">
+                    <button type="button" data-value="101">101</button>
+                    <button type="button" data-value="301">301</button>
+                    <button type="button" data-value="501">501</button>
+                    <button type="button" data-value="Cricket">Cricket</button>
+                    <button type="button" data-value="Around the World">Around the World</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="playerNames">Players:</label>
+                <div id="playerInputs">
+                    <input type="text" placeholder="Player 1 Name" required>
+                    <input type="text" placeholder="Player 2 Name" required>
+                </div>
+                <button type="button" id="addPlayer">Add Player</button>
+            </div>
+            <button type="submit">Start Game</button>
+        </form>
+    </div>
 
+    <script>
+        // JavaScript for button group functionality
+        const gameButtons = document.getElementById('gameButtons');
+        const buttons = gameButtons.querySelectorAll('button');
+        let selectedGame = null;
 
+        gameButtons.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                // Remove active class from all buttons
+                buttons.forEach(button => button.classList.remove('active'));
+                // Add active class to clicked button
+                event.target.classList.add('active');
+                // Store the selected game
+                selectedGame = event.target.dataset.value;
+                console.log(`Selected Game: ${selectedGame}`);
+            }
+        });
+
+        // JavaScript for adding/removing player inputs dynamically
+        const playerInputs = document.getElementById('playerInputs');
+        const addPlayerButton = document.getElementById('addPlayer');
+
+        addPlayerButton.addEventListener('click', () => {
+            if (playerInputs.children.length < 8) { // Limit to 8 players
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `Player ${playerInputs.children.length + 1} Name`;
+                playerInputs.appendChild(input);
+            } else {
+                alert('Maximum of 8 players allowed.');
+            }
+        });
+
+        const gameSetupForm = document.getElementById('gameSetupForm');
+        gameSetupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const playerNames = Array.from(playerInputs.querySelectorAll('input')).map(input => input.value).filter(name => name.trim());
+
+            if (playerNames.length < 2) {
+                alert('At least 2 players are required!');
+                return;
+            }
+
+            if (!selectedGame) {
+                alert('Please select a game type!');
+                return;
+            }
+
+            // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
+            console.log({ players: playerNames, game: selectedGame });
+            alert(`Starting game: ${selectedGame} with players: ${playerNames.join(', ')}`);
+        });
+    </script>
 </body>
+
+</html>
