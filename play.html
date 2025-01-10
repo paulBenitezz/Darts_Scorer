@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Play Screen</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: #0400ff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player-score-group {
+            background: #fff;
+            font-size: 16px;
+            width: 150px;
+            padding: 20px;
+            text-align: center;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-score-group input {
+            width: 45%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="player-score-group">
+            <!-- Player name, score, and input for score updates -->
+            <label for="playerScore">301</label>
+            <label for="playerName">Paul</label>
+            <input type="number" id="score" placeholder="0" required>
+        </div>
+        
+    </div>
+</body>
+
+</html>

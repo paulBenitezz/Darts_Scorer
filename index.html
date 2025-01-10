@@ -219,8 +219,8 @@
             e.preventDefault();
             const playerNames = Array.from(playerInputs.querySelectorAll('input')).map(input => input.value).filter(name => name.trim());
 
-            if (playerNames.length < 2) {
-                alert('At least 2 players are required!');
+            if (playerNames.length < 1) {
+                alert('At least 1 player is required!');
                 return;
             }
 
@@ -232,6 +232,7 @@
             // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
             console.log({ players: playerNames, game: selectedGame });
             alert(`Starting game: ${selectedGame} with players: ${playerNames.join(', ')}`);
+            window.location.href = "play.html";
         });
     </script>
 </body>
