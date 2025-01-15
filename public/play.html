@@ -76,10 +76,27 @@
             <!-- Player name, score, and input for score updates -->
             <label for="playerScore">301</label>
             <label for="playerName">Paul</label>
-            <input type="number" id="score" placeholder="0" required>
+            <input type="number" id="inputScore" placeholder="0" required>
         </div>
         
     </div>
+
+    <script>
+        
+        const gameData = JSON.parse(localStorage.getItem('dartGameData'));
+
+        if (!gameData) {
+            alert('No game data found! Returning back to setup page...')
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const {players, game} = gameData;
+
+        
+
+
+    </script>
 </body>
 
 </html>

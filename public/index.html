@@ -35,8 +35,8 @@
 
         .form-group {
             margin-bottom: 15px;
-            
-            
+
+
         }
 
         .form-group button {
@@ -52,7 +52,7 @@
         }
 
         .player-input-group {
-            display:flex;
+            display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 10px;
@@ -76,7 +76,7 @@
             cursor: pointer;
         }
 
-         .player-input-group button:hover {
+        .player-input-group button:hover {
             background-color: #892626;
         }
 
@@ -86,7 +86,7 @@
             gap: 10px;
             justify-content: center;
             margin: 20px 0;
-            
+
         }
 
         .button-group button {
@@ -106,8 +106,10 @@
         }
 
         .button-group button.active:hover {
-            background-color: #007bff; /* Keep the active color on hover */
-            color: white; /* Maintain text color */
+            background-color: #007bff;
+            /* Keep the active color on hover */
+            color: white;
+            /* Maintain text color */
         }
 
         .button-group button:hover {
@@ -147,14 +149,14 @@
                     <button type="button" data-value="101">101</button>
                     <button type="button" data-value="301">301</button>
                     <button type="button" data-value="501">501</button>
-                    <button type="button" data-value="Cricket">Cricket</button>
-                    <button type="button" data-value="Around the World">Around the World</button>
+                    <button type="button" data-value="601">Cricket</button>
+                    <button type="button" data-value="701">Around the World</button>
                 </div>
             </div>
             <div class="form-group">
                 <label for="playerNames">Players:</label>
-                    <div id="playerInputs">
-                        <div class="player-input-group">
+                <div id="playerInputs">
+                    <div class="player-input-group">
                         <input type="text" placeholder="Player 1 Name" required>
                     </div>
                 </div>
@@ -186,6 +188,7 @@
         const playerInputs = document.getElementById('playerInputs');
         const addPlayerButton = document.getElementById('addPlayer');
 
+
         addPlayerButton.addEventListener('click', () => {
             if (playerInputs.children.length < 8) { // Limit to 8 players
                 const div = document.createElement('div');
@@ -214,8 +217,11 @@
             }
         });
 
+
+
         const gameSetupForm = document.getElementById('gameSetupForm');
-        gameSetupForm.addEventListener('submit', (e) => {
+
+        gameSetupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const playerNames = Array.from(playerInputs.querySelectorAll('input')).map(input => input.value).filter(name => name.trim());
 
@@ -229,11 +235,31 @@
                 return;
             }
 
-            // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
-            console.log({ players: playerNames, game: selectedGame });
-            alert(`Starting game: ${selectedGame} with players: ${playerNames.join(', ')}`);
-            window.location.href = "play.html";
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ playerNames, selectedGame }),
+                });
+
+                const result = await response.text();
+                alert(result);
+                if (response.ok) {
+                    window.location.href = "play.html";
+                }
+            } catch (err) {
+                console.error('Error submitting form:', err);
+                alert('Error submitting form. Please try again.');
+            }
         });
+
+        // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
+        // const gameData = { players: playerNames, game: selectedGame };
+
+        // localStorage.setItem('dartGameData', JSON.stringify(gameData));
+        // alert(`Starting game: ${selectedGame} with players: ${playerNames.join(', ')}`);
     </script>
 </body>
 
