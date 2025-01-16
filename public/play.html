@@ -63,39 +63,65 @@
 
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+            -webkit-appearance: none;
+            margin: 0;
         }
-
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="player-score-group">
-            <!-- Player name, score, and input for score updates -->
-            <label for="playerScore">301</label>
-            <label for="playerName">Paul</label>
-            <input type="number" id="inputScore" placeholder="0" required>
-        </div>
-        
+    <div class="container" id="playerScoresContainer">
+
+
     </div>
 
     <script>
-        
-        const gameData = JSON.parse(localStorage.getItem('dartGameData'));
+        async function fetchGameData() {
+            console.log('fetchGameData function called'); // Debugging log
+            try {
+                const response = await fetch('/game-data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Fetched data:', data); // Debugging log
 
-        if (!gameData) {
-            alert('No game data found! Returning back to setup page...')
-            window.location.href = 'index.html';
-            return;
+                const container = document.getElementById('playerScoresContainer');
+                container.innerHTML = ''; // Clear existing content
+
+                data.forEach(player => {
+                    console.log('Creating player div for:', player); // Debugging log
+
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = 'player-score-group';
+
+
+                    const scoreLabel = document.createElement('label');
+                    scoreLabel.textContent = player.score;
+                    playerDiv.appendChild(scoreLabel);
+                    console.log("score label should create here");
+
+                    const nameLabel = document.createElement('label');
+                    nameLabel.textContent = player.name;
+                    playerDiv.appendChild(nameLabel);
+                    console.log("name label should create here");
+
+
+                    const scoreInput = document.createElement('input');
+                    scoreInput.type = 'number';
+                    scoreInput.placeholder = '0';
+
+                    playerDiv.appendChild(scoreInput);
+                    console.log("score input should create here");
+
+                    container.appendChild(playerDiv);
+                    console.log("player div should append here");
+                });
+            } catch (err) {
+                console.error('Error fetching game data.', err);
+            }
         }
-
-        const {players, game} = gameData;
-
-        
-
-
+        window.onload = fetchGameData;
     </script>
 </body>
 

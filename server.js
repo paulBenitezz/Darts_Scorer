@@ -56,7 +56,11 @@ app.post('/submit', async (req, res) => {
     try {
         await client.query('BEGIN');
 
+        await client.query('DELETE FROM game');
+        await client.query('DELETE FROM players');
+
         const playerIds = [];
+
 
         for (const name of playerNames) {
             const result = await client.query('INSERT INTO players (name, score) VALUES ($1,$2) RETURNING player_id', [name, initialScore]);
@@ -73,6 +77,26 @@ app.post('/submit', async (req, res) => {
         await client.query('ROLLBACK');
         console.error('Error saving game data:', err);
         res.status(500).send('Error saving game data. Please try again.');
+    }
+});
+
+// new endpoint to fetch player and game data
+
+app.get('/game-data', async (req, res) => {
+    console.log('Fetching game data'); // Debugging log
+    try {
+        console.log('Before executing query'); // Debugging log
+        const result = await client.query(`
+            SELECT players.name, players.score, game.gameType
+            FROM players
+            JOIN game ON players.player_id = game.player_id
+        `);
+        console.log('After executing query'); // Debugging log
+        console.log('Fetched game data:', result.rows); // Debugging log
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching game data:', err);
+        res.status(500).send('Error fetching game data.');
     }
 });
 

@@ -224,6 +224,7 @@
         gameSetupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const playerNames = Array.from(playerInputs.querySelectorAll('input')).map(input => input.value).filter(name => name.trim());
+            //const selectedGame = document.querySelector('input[name="gameType"]:checked')?.value;
 
             if (playerNames.length < 1) {
                 alert('At least 1 player is required!');
@@ -236,6 +237,7 @@
             }
 
             try {
+                console.log('entering try block');
                 const response = await fetch('/submit', {
                     method: 'POST',
                     headers: {
@@ -245,8 +247,10 @@
                 });
 
                 const result = await response.text();
+                console.log('Response:', result); // Debugging log
                 alert(result);
                 if (response.ok) {
+                    console.log('Redirecting to play.html'); // Debugging log
                     window.location.href = "play.html";
                 }
             } catch (err) {
@@ -254,6 +258,7 @@
                 alert('Error submitting form. Please try again.');
             }
         });
+
 
         // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
         // const gameData = { players: playerNames, game: selectedGame };
