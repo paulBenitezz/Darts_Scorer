@@ -72,10 +72,12 @@
 <body>
     <div class="container" id="playerScoresContainer">
 
-
     </div>
-
+    <script src="GameRules.js"></script>
     <script>
+        let currentPlayerIndex = 0;
+        let playersData = [];
+
         async function fetchGameData() {
             console.log('fetchGameData function called'); // Debugging log
             try {
@@ -84,17 +86,18 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
+                playersData = data;
                 console.log('Fetched data:', data); // Debugging log
 
                 const container = document.getElementById('playerScoresContainer');
                 container.innerHTML = ''; // Clear existing content
 
-                data.forEach(player => {
+                data.forEach((player, index) => {
                     console.log('Creating player div for:', player); // Debugging log
-
+                    let playerobj = new Player(player.player_id, player.name, player.score);    // player object
                     const playerDiv = document.createElement('div');
                     playerDiv.className = 'player-score-group';
-
+                    playerDiv.id = `player-${index}`;
 
                     const scoreLabel = document.createElement('label');
                     scoreLabel.textContent = player.score;
@@ -106,22 +109,75 @@
                     playerDiv.appendChild(nameLabel);
                     console.log("name label should create here");
 
-
                     const scoreInput = document.createElement('input');
                     scoreInput.type = 'number';
                     scoreInput.placeholder = '0';
-
+                    scoreInput.readOnly = true;
+                    scoreInput.addEventListener('keydown', async (event) => {
+                        if (event.key === 'Enter') {
+                            currentPlayerIndex = (currentPlayerIndex + 1) % playersData.length;
+                            console.log(`player-${index} score: ${scoreInput.value}`);
+                            // update score
+                            const newScore = parseInt(scoreInput.value, 10);
+                            scoreLabel.textContent -= scoreInput.value;
+                            scoreInput.value = "";
+                            console.log(`updating player ${player.player_id}`);
+                            await updatePlayerScore(player.player_id, newScore);
+                            highlightCurrentPlayer();
+                        }
+                    })
                     playerDiv.appendChild(scoreInput);
                     console.log("score input should create here");
 
                     container.appendChild(playerDiv);
                     console.log("player div should append here");
                 });
+                highlightCurrentPlayer();
             } catch (err) {
                 console.error('Error fetching game data.', err);
             }
         }
+
+        function highlightCurrentPlayer() {
+            playersData.forEach((_, index) => {
+                const playerDiv = document.getElementById(`player-${index}`);
+                const scoreInput = playerDiv.querySelector('input');
+                if (index === currentPlayerIndex) {
+                    playerDiv.classList.add('current-player');
+                    scoreInput.readOnly = false;
+                    scoreInput.focus();
+                } else {
+                    playerDiv.classList.remove('current-player');
+                    scoreInput.readOnly = true;
+                }
+            });
+        }
+
+
+        async function updatePlayerScore(playerId, score) {
+            try {
+                const response = await fetch('/update-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ playerId, score }),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response}`);
+                }
+                console.log('Score updated successfully');
+            } catch (err) {
+                console.error('Error updating scores: ', err);
+            }
+        }
+
+
+
         window.onload = fetchGameData;
+
+
+
     </script>
 </body>
 

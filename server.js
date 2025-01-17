@@ -87,7 +87,7 @@ app.get('/game-data', async (req, res) => {
     try {
         console.log('Before executing query'); // Debugging log
         const result = await client.query(`
-            SELECT players.name, players.score, game.gameType
+            SELECT players.player_id, players.name, players.score, game.gameType
             FROM players
             JOIN game ON players.player_id = game.player_id
         `);
@@ -97,6 +97,18 @@ app.get('/game-data', async (req, res) => {
     } catch (err) {
         console.error('Error fetching game data:', err);
         res.status(500).send('Error fetching game data.');
+    }
+});
+
+app.post('/update-score', async (req, res) => {
+    const { playerId, score } = req.body;
+    try {
+        await client.query('UPDATE players SET score = $1 WHERE player_id= $2', [score, playerId]);
+        console.log(`player ${playerId} score: ${score}`);
+        res.send('Score updated successfully');
+    } catch (err) {
+        console.error('Error updating score: ', err);
+        res.status(500).send('Error updating score.');
     }
 });
 
