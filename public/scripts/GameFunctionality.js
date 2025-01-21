@@ -1,12 +1,15 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
 
 let currentPlayerIndex = 0;
+let previousPlayerIndex = -1;
 let playersData = [];
 let gameType = '';
 let redemptionMode = false;
 let redemptionTurns = 0;
 let originalWinnerIndex = -1;
 let winnersList = [];
+let scoreStack = [];
+
 async function fetchGameData() {
     console.log('fetchGameData function called'); // Debugging log
     try {
@@ -35,64 +38,11 @@ async function fetchGameData() {
             nameLabel.textContent = player.name;
             playerDiv.appendChild(nameLabel);
 
-            const scoreInput = document.createElement('input');
-            scoreInput.type = 'number';
-            scoreInput.placeholder = '0';
-            scoreInput.readOnly = true;
-            scoreInput.addEventListener('keydown', async (event) => {
-                if (event.key === 'Enter') {
-                    console.log(`player-${index} score: ${scoreInput.value}`);
-                    // update score
-                    let newScore = parseInt(scoreInput.value, 10);
-                    if (Number.isNaN(newScore)) {
-                        newScore = 0;
-                    }
-                    console.log(`new score: ${newScore}`);
-                    if (!isValidScore(newScore)) {
-                        alert('Invalid score! Please enter a score between 0 and 180.');
-                        return;
-                    }
-                    scoreLabel.textContent -= scoreInput.value;
-                    scoreInput.value = "";
-                    console.log(`updating player ${player.player_id}`);
-                    await updatePlayerScore(player.player_id, newScore);
-                    updateScore(player, newScore);
-                    if (didPlayerReachZero(player) || redemptionMode) {
-                        if (!redemptionMode) {
-                            const { redemptionTurns: turns, originalWinnerIndex: winnerIndex } = handleRedemption(playersData, currentPlayerIndex);
-                            redemptionMode = true;
-                            redemptionTurns = turns;
-                            originalWinnerIndex = winnerIndex;
-                            winnersList.push(player.name);
-                            alert(`${player.name} wins! Redemption mode activated.`);
-                        } else {
-                            redemptionTurns--;
-                            if (player.score === 0) {
-                                alert(`${player.name} reached 0!`);
-                                winnersList.push(player.name);
-                            }
-                            if (redemptionTurns === 0) {
-                                if (winnersList.length > 1) {
-                                    let nameList = winnersList.join(', ');
-                                    alert(`${nameList} win! Game Over!`);
-                                    // handle sudden death
-                                } else {
-                                alert(`${playersData[originalWinnerIndex].name} wins! Game Over!`);
-                                redemptionMode = false;
-                                window.location.href = '../index.html';
-                                }
-                            }
-
-                        }
-                    }
-                    currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
-                    highlightCurrentPlayer();
-
-                }
-            })
-
-            playerDiv.appendChild(scoreInput);
+            if (index === currentPlayerIndex) {
+                createScoreInput(player, playerDiv, index, scoreLabel);
+            }
             container.appendChild(playerDiv);
+            scoreStack[index] = [];
 
         });
 
@@ -103,17 +53,131 @@ async function fetchGameData() {
     }
 }
 
+function createScoreInput(player, playerDiv, index, scoreLabel) {
+    const scoreInput = document.createElement('input');
+    scoreInput.type = 'number';
+    scoreInput.placeholder = '0';
+    scoreInput.readOnly = false;
+    scoreInput.autofocus = true;
+    scoreInput.focus();
+    scoreInput.addEventListener('keydown', async (event) => {
+        if (event.key === 'Enter') {
+            console.log(`player-${index} score: ${scoreInput.value}`);
+            // update score
+            let newScore = parseInt(scoreInput.value, 10);
+            if (Number.isNaN(newScore)) {
+                newScore = 0;
+            }
+            console.log(`new score: ${newScore}`);
+            if (!isValidScore(newScore)) {
+                alert('Invalid score! Please enter a score between 0 and 180.');
+                return;
+            }
+            scoreLabel.textContent -= scoreInput.value;
+            scoreInput.value = "";
+            console.log(`updating player ${player.player_id}`);
+            scoreStack[index].push(newScore);
+            await updatePlayerScore(player.player_id, newScore);
+            updateScore(player, newScore);
+            if (didPlayerReachZero(player) || redemptionMode) {
+                if (!redemptionMode) {
+                    const { redemptionTurns: turns, originalWinnerIndex: winnerIndex } = handleRedemption(playersData, currentPlayerIndex);
+                    redemptionMode = true;
+                    redemptionTurns = turns;
+                    originalWinnerIndex = winnerIndex;
+                    winnersList.push(player.name);
+                    alert(`${player.name} wins! Redemption mode activated.`);
+                } else {
+                    redemptionTurns--;
+                    if (player.score === 0) {
+                        alert(`${player.name} reached 0!`);
+                        winnersList.push(player.name);
+                    }
+                    if (redemptionTurns === 0) {
+                        if (winnersList.length > 1) {
+                            let nameList = winnersList.join(', ');
+                            alert(`${nameList} win! Game Over!`);
+                            // handle sudden death
+                        } else {
+                            alert(`${playersData[originalWinnerIndex].name} wins! Game Over!`);
+                            redemptionMode = false;
+                            window.location.href = '../index.html';
+                        }
+                    }
+
+                }
+            }
+            previousPlayerIndex = currentPlayerIndex;
+            currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
+            highlightCurrentPlayer();
+            showReverseButton(previousPlayerIndex);
+
+        }
+    });
+
+    playerDiv.appendChild(scoreInput);
+}
+
+function createReverseButton(playerDiv, playerIndex, scoreLabel) {
+    const reverseButton = document.createElement('button');
+    reverseButton.id = 'reverse-button';
+    console.log('Creating reverse button');
+    reverseButton.textContent = 'Reverse';
+    reverseButton.addEventListener('click', async () => {
+        if (scoreStack[playerIndex].length > 0) {
+            const lastScore = scoreStack[playerIndex].pop();
+            scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + lastScore;
+            const playerId = playerDiv.dataset.playerId;
+            console.log(`Reversing score for player ${playerId}`);
+            await updatePlayerScore(playerId, -lastScore);
+            currentPlayerIndex = playerIndex;
+            highlightCurrentPlayer();
+            reverseButton.remove();
+            createScoreInput(playerDiv, playerIndex, scoreLabel);
+        } else {
+            console.log('No score to reverse');
+        }
+    });
+    playerDiv.appendChild(reverseButton);
+}
+
+function showReverseButton(playerIndex) {
+
+    const existingReverseButton = document.getElementById('reverse-button');
+
+    if (existingReverseButton) {
+        existingReverseButton.remove();
+    }
+
+    const playerDiv = document.getElementById(`player-${playerIndex}`);
+    const scoreInput = playerDiv.querySelector('input');
+    const scoreLabel = playerDiv.querySelector('label:nth-of-type(2)');
+    if (scoreInput) {
+        scoreInput.remove();
+    }
+
+    createReverseButton(playerDiv, playerIndex, scoreLabel);
+}
+
 function highlightCurrentPlayer() {
     playersData.forEach((_, index) => {
         const playerDiv = document.getElementById(`player-${index}`);
         const scoreInput = playerDiv.querySelector('input');
         if (index === currentPlayerIndex) {
             playerDiv.classList.add('current-player');
-            scoreInput.readOnly = false;
-            scoreInput.focus();
+            if (scoreInput) {
+                scoreInput.readOnly = false;
+                scoreInput.focus();
+            } else {
+
+                createScoreInput(playersData[index], playerDiv, index, playerDiv.querySelector('label'));
+            }
         } else {
             playerDiv.classList.remove('current-player');
-            scoreInput.readOnly = true;
+            if (scoreInput) {
+                scoreInput.readOnly = true;
+                scoreInput.blur();
+            }
         }
     });
 }
