@@ -68,7 +68,7 @@ app.post('/submit', async (req, res) => {
         }
 
         for (const playerId of playerIds) {
-            await client.query('INSERT INTO game (gameType, player_id) VALUES ($1, $2)', [selectedGame, playerId]);
+            await client.query('INSERT INTO game (gameType, player_id) VALUES ($1, $2)', [initialScore, playerId]);
         }
 
         await client.query('COMMIT');

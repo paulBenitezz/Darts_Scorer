@@ -1,14 +1,15 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
 
+let currentScore = -1;
 let currentPlayerIndex = 0;
 let previousPlayerIndex = -1;
 let playersData = [];
-let gameType = '';
 let redemptionMode = false;
 let redemptionTurns = 0;
 let originalWinnerIndex = -1;
 let winnersList = [];
 let scoreStack = [];
+let isPlayingAlone = false;
 
 async function fetchGameData() {
     console.log('fetchGameData function called'); // Debugging log
@@ -19,23 +20,39 @@ async function fetchGameData() {
         }
         const data = await response.json();
         playersData = data;
+        gameType = data[0].gameType;
         console.log('Fetched data:', data); // Debugging log
+
+        if (playersData.length === 1) {
+            console.log("Solo Dolo");
+            isPlayingAlone = true;
+        }
 
         const container = document.getElementById('playerScoresContainer');
         container.innerHTML = ''; // Clear existing content
 
         data.forEach((player, index) => {
+            if (currentScore === -1) {
+                currentScore = player.score;
+                console.log(`Player initial score ${currentScore}`);
+            }
             console.log('Creating player div for:', player); // Debugging log
-            const playerDiv = document.createElement('div');
+            let playerDiv = document.createElement('div');
             playerDiv.className = 'player-score-group';
             playerDiv.id = `player-${index}`;
+            console.log('playerDiv:', playerDiv); // Debugging log
+            playerDiv.dataset.playerId = player.player_id;
+            playerDiv.dataset.score = currentScore;
+
 
             const scoreLabel = document.createElement('label');
             scoreLabel.textContent = player.score;
+            scoreLabel.className = 'score-label';
             playerDiv.appendChild(scoreLabel);
 
             const nameLabel = document.createElement('label');
             nameLabel.textContent = player.name;
+            nameLabel.className = 'name-label';
             playerDiv.appendChild(nameLabel);
 
             if (index === currentPlayerIndex) {
@@ -54,7 +71,15 @@ async function fetchGameData() {
 }
 
 function createScoreInput(player, playerDiv, index, scoreLabel) {
+    const existingScoreInput = document.getElementById('floating-input');
+
+    if (existingScoreInput) {
+        existingScoreInput.remove();
+    }
+
+
     const scoreInput = document.createElement('input');
+    scoreInput.id = 'floating-input';
     scoreInput.type = 'number';
     scoreInput.placeholder = '0';
     scoreInput.readOnly = false;
@@ -62,7 +87,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
     scoreInput.focus();
     scoreInput.addEventListener('keydown', async (event) => {
         if (event.key === 'Enter') {
-            console.log(`player-${index} score: ${scoreInput.value}`);
+            console.log(`player-${index} round score: ${scoreInput.value}`);
             // update score
             let newScore = parseInt(scoreInput.value, 10);
             if (Number.isNaN(newScore)) {
@@ -74,12 +99,21 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
                 return;
             }
             scoreLabel.textContent -= scoreInput.value;
+            currentScore -= newScore;
+            playerDiv.dataset.score = currentScore;
             scoreInput.value = "";
-            console.log(`updating player ${player.player_id}`);
+            console.log(`updating player ${player.player_id} with score: ${currentScore}`);
             scoreStack[index].push(newScore);
-            await updatePlayerScore(player.player_id, newScore);
+
+            await updatePlayerScore(player.player_id, currentScore);
             updateScore(player, newScore);
             if (didPlayerReachZero(player) || redemptionMode) {
+                if (isPlayingAlone) {
+                    alert(`${player.name} wins! Game Over!`);
+                    window.location.href = '../index.html';
+                    return;
+                }
+
                 if (!redemptionMode) {
                     const { redemptionTurns: turns, originalWinnerIndex: winnerIndex } = handleRedemption(playersData, currentPlayerIndex);
                     redemptionMode = true;
@@ -110,30 +144,38 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
             previousPlayerIndex = currentPlayerIndex;
             currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
             highlightCurrentPlayer();
-            showReverseButton(previousPlayerIndex);
+            showReverseButton(player, previousPlayerIndex);
 
         }
     });
 
     playerDiv.appendChild(scoreInput);
+
 }
 
-function createReverseButton(playerDiv, playerIndex, scoreLabel) {
+function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
     const reverseButton = document.createElement('button');
     reverseButton.id = 'reverse-button';
     console.log('Creating reverse button');
     reverseButton.textContent = 'Reverse';
     reverseButton.addEventListener('click', async () => {
         if (scoreStack[playerIndex].length > 0) {
+
             const lastScore = scoreStack[playerIndex].pop();
-            scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + lastScore;
-            const playerId = playerDiv.dataset.playerId;
-            console.log(`Reversing score for player ${playerId}`);
-            await updatePlayerScore(playerId, -lastScore);
+            console.log(`last score: ${lastScore}`);
+            console.log(`score pre update: ${player.score}`);
+            player.score = parseInt(scoreLabel.textContent, 10) + lastScore;
+            console.log(`score post reverse: ${player.score}`);
+            await updatePlayerScore(player.player_id, player.score);
+            scoreLabel.textContent = player.score;
             currentPlayerIndex = playerIndex;
             highlightCurrentPlayer();
             reverseButton.remove();
-            createScoreInput(playerDiv, playerIndex, scoreLabel);
+
+            if (!isPlayingAlone) {
+                createScoreInput(player, playerDiv, playerIndex, scoreLabel);
+            }
+
         } else {
             console.log('No score to reverse');
         }
@@ -141,7 +183,7 @@ function createReverseButton(playerDiv, playerIndex, scoreLabel) {
     playerDiv.appendChild(reverseButton);
 }
 
-function showReverseButton(playerIndex) {
+function showReverseButton(player, playerIndex) {
 
     const existingReverseButton = document.getElementById('reverse-button');
 
@@ -150,13 +192,15 @@ function showReverseButton(playerIndex) {
     }
 
     const playerDiv = document.getElementById(`player-${playerIndex}`);
+    console.log('showReverseButton playerIndex:', playerIndex); // Debugging log
+    console.log('showReverseButton playerDiv:', playerDiv); // Debugging log
     const scoreInput = playerDiv.querySelector('input');
-    const scoreLabel = playerDiv.querySelector('label:nth-of-type(2)');
-    if (scoreInput) {
+    const scoreLabel = playerDiv.querySelector('.score-label');
+    if (scoreInput && !isPlayingAlone) {
         scoreInput.remove();
     }
 
-    createReverseButton(playerDiv, playerIndex, scoreLabel);
+    createReverseButton(player, playerDiv, playerIndex, scoreLabel);
 }
 
 function highlightCurrentPlayer() {
@@ -169,7 +213,6 @@ function highlightCurrentPlayer() {
                 scoreInput.readOnly = false;
                 scoreInput.focus();
             } else {
-
                 createScoreInput(playersData[index], playerDiv, index, playerDiv.querySelector('label'));
             }
         } else {
@@ -195,7 +238,7 @@ async function updatePlayerScore(playerId, score) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response}`);
         }
-        console.log('Score updated successfully');
+        console.log(`Score updated successfully ${score}`);
     } catch (err) {
         console.error('Error updating scores: ', err);
     }
