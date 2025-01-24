@@ -1,6 +1,6 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
 
-let currentScore = -1;
+
 let currentPlayerIndex = 0;
 let previousPlayerIndex = -1;
 let playersData = [];
@@ -20,7 +20,6 @@ async function fetchGameData() {
         }
         const data = await response.json();
         playersData = data;
-        gameType = data[0].gameType;
         console.log('Fetched data:', data); // Debugging log
 
         if (playersData.length === 1) {
@@ -32,17 +31,12 @@ async function fetchGameData() {
         container.innerHTML = ''; // Clear existing content
 
         data.forEach((player, index) => {
-            if (currentScore === -1) {
-                currentScore = player.score;
-                console.log(`Player initial score ${currentScore}`);
-            }
             console.log('Creating player div for:', player); // Debugging log
             let playerDiv = document.createElement('div');
             playerDiv.className = 'player-score-group';
             playerDiv.id = `player-${index}`;
             console.log('playerDiv:', playerDiv); // Debugging log
             playerDiv.dataset.playerId = player.player_id;
-            playerDiv.dataset.score = currentScore;
 
 
             const scoreLabel = document.createElement('label');
@@ -74,17 +68,20 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
     const existingScoreInput = document.getElementById('floating-input');
 
     if (existingScoreInput) {
+        existingScoreInput.autofocus = false;
         existingScoreInput.remove();
     }
-
 
     const scoreInput = document.createElement('input');
     scoreInput.id = 'floating-input';
     scoreInput.type = 'number';
     scoreInput.placeholder = '0';
     scoreInput.readOnly = false;
-    scoreInput.autofocus = true;
-    scoreInput.focus();
+
+    setTimeout(() => {
+        scoreInput.focus();
+    }, 0);
+
     scoreInput.addEventListener('keydown', async (event) => {
         if (event.key === 'Enter') {
             console.log(`player-${index} round score: ${scoreInput.value}`);
@@ -98,16 +95,20 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
                 alert('Invalid score! Please enter a score between 0 and 180.');
                 return;
             }
+            let currentScore = parseInt(scoreLabel.textContent, 10);
             scoreLabel.textContent -= scoreInput.value;
             currentScore -= newScore;
+
             playerDiv.dataset.score = currentScore;
+            //player.score = currentScore;
+            playersData[index].score = currentScore;
             scoreInput.value = "";
             console.log(`updating player ${player.player_id} with score: ${currentScore}`);
             scoreStack[index].push(newScore);
 
-            await updatePlayerScore(player.player_id, currentScore);
-            updateScore(player, newScore);
-            if (didPlayerReachZero(player) || redemptionMode) {
+            await updatePlayerScore(playersData[index].player_id, currentScore);
+            console.log(`player ${playersData[index].player_id} score: ${currentScore}`);
+            if (didPlayerReachZero(playersData[index]) || redemptionMode) {
                 if (isPlayingAlone) {
                     alert(`${player.name} wins! Game Over!`);
                     window.location.href = '../index.html';
@@ -166,7 +167,7 @@ function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
             console.log(`score pre update: ${player.score}`);
             player.score = parseInt(scoreLabel.textContent, 10) + lastScore;
             console.log(`score post reverse: ${player.score}`);
-            await updatePlayerScore(player.player_id, player.score);
+            await reverseUpdatePlayerScore(player.player_id, lastScore);
             scoreLabel.textContent = player.score;
             currentPlayerIndex = playerIndex;
             highlightCurrentPlayer();
@@ -241,6 +242,25 @@ async function updatePlayerScore(playerId, score) {
         console.log(`Score updated successfully ${score}`);
     } catch (err) {
         console.error('Error updating scores: ', err);
+    }
+}
+
+async function reverseUpdatePlayerScore(playerId, score) {
+    try {
+        const response = await fetch('/reverse-update-score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ playerId, score }),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(`Reversed score for player ${playerId}: ${data.score}`);
+    } catch (err) {
+        console.error('Error reversing score:', err);
     }
 }
 

@@ -5,127 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dart Game Setup</title>
+    <link rel="stylesheet" href="styles/styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #333;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-
-
-        }
-
-        .form-group button {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-            width: 10%;
-            text-align: center;
-        }
-
-        .player-input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .player-input-group input {
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .player-input-group button {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #d91919;
-            color: white;
-            cursor: pointer;
-        }
-
-        .player-input-group button:hover {
-            background-color: #892626;
-        }
-
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
-
-        }
-
-        .button-group button {
-            padding: 3px 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #28a745;
-            flex: 1 1 auto;
-            width: auto;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .button-group button.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .button-group button.active:hover {
-            background-color: #007bff;
-            /* Keep the active color on hover */
-            color: white;
-            /* Maintain text color */
-        }
-
-        .button-group button:hover {
-            background-color: #218838;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
+      
         button {
             background-color: #28a745;
             color: white;
@@ -136,10 +18,27 @@
         button:hover {
             background-color: #218838;
         }
+
     </style>
 </head>
 
 <body>
+    <nav class="navbar">
+    <div class="header-container">
+        <div class="navbar-brand">
+            <a href="index.html">T20-darts.io</a>
+        </div>
+        <div class="navbar-menu">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="play.html">Play</a></li>
+                <li><a href="about.html">Leaderboards</a></li>
+                
+            </ul>
+        </div>
+    </div>
+    </nav>
+
     <div class="container">
         <h1>Dart Game Setup</h1>
         <form id="gameSetupForm">
@@ -149,15 +48,15 @@
                     <button type="button" data-value="101">101</button>
                     <button type="button" data-value="301">301</button>
                     <button type="button" data-value="501">501</button>
-                    <button type="button" data-value="601">Cricket</button>
-                    <button type="button" data-value="701">Around the World</button>
+                    <!--<button type="button" data-value="601">Cricket</button>
+                    <button type="button" data-value="701">Around the World</button></div>-->
                 </div>
             </div>
             <div class="form-group">
                 <label for="playerNames">Players:</label>
                 <div id="playerInputs">
                     <div class="player-input-group">
-                        <input type="text" placeholder="Player 1 Name" required>
+                        <input type="text" placeholder="Player 1 Name" required autofocus="true">
                     </div>
                 </div>
             </div>
@@ -166,106 +65,9 @@
         </form>
     </div>
 
-    <script>
-        // JavaScript for button group functionality
-        const gameButtons = document.getElementById('gameButtons');
-        const buttons = gameButtons.querySelectorAll('button');
-        let selectedGame = null;
+    <script src="scripts/IndexForm.js" type="module"></script>
+    <script src="scripts/GameLooks.js"></script>
 
-        gameButtons.addEventListener('click', (event) => {
-            if (event.target.tagName === 'BUTTON') {
-                // Remove active class from all buttons
-                buttons.forEach(button => button.classList.remove('active'));
-                // Add active class to clicked button
-                event.target.classList.add('active');
-                // Store the selected game
-                selectedGame = event.target.dataset.value;
-                console.log(`Selected Game: ${selectedGame}`);
-            }
-        });
-
-        // JavaScript for adding/removing player inputs dynamically
-        const playerInputs = document.getElementById('playerInputs');
-        const addPlayerButton = document.getElementById('addPlayer');
-
-
-        addPlayerButton.addEventListener('click', () => {
-            if (playerInputs.children.length < 8) { // Limit to 8 players
-                const div = document.createElement('div');
-                div.classList.add('player-input-group');
-
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.placeholder = `Player ${playerInputs.children.length + 1} Name`;
-                input.required = true;
-
-                const button = document.createElement('Button');
-                button.type = 'button';
-                button.classList.add('removePlayer');
-                button.textContent = '-';
-
-                button.addEventListener('click', () => {
-                    div.remove();
-                });
-
-                div.appendChild(input);
-                div.appendChild(button);
-                playerInputs.appendChild(div);
-
-            } else {
-                alert('Maximum of 8 players allowed.');
-            }
-        });
-
-
-
-        const gameSetupForm = document.getElementById('gameSetupForm');
-
-        gameSetupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const playerNames = Array.from(playerInputs.querySelectorAll('input')).map(input => input.value).filter(name => name.trim());
-            //const selectedGame = document.querySelector('input[name="gameType"]:checked')?.value;
-
-            if (playerNames.length < 1) {
-                alert('At least 1 player is required!');
-                return;
-            }
-
-            if (!selectedGame) {
-                alert('Please select a game type!');
-                return;
-            }
-
-            try {
-                console.log('entering try block');
-                const response = await fetch('/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ playerNames, selectedGame }),
-                });
-
-                const result = await response.text();
-                console.log('Response:', result); // Debugging log
-                alert(result);
-                if (response.ok) {
-                    console.log('Redirecting to play.html'); // Debugging log
-                    window.location.href = "play.html";
-                }
-            } catch (err) {
-                console.error('Error submitting form:', err);
-                alert('Error submitting form. Please try again.');
-            }
-        });
-
-
-        // Pass data to the next screen (you can use localStorage, URL parameters, etc.)
-        // const gameData = { players: playerNames, game: selectedGame };
-
-        // localStorage.setItem('dartGameData', JSON.stringify(gameData));
-        // alert(`Starting game: ${selectedGame} with players: ${playerNames.join(', ')}`);
-    </script>
 </body>
 
 </html>

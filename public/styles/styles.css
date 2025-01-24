@@ -1,0 +1,248 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    float: middle;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: 75px;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 5px 0;
+    height: 100px;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand a {
+    color: white;
+    text-decoration: none;
+    font-size: 2.2em;
+    font-weight: bold;
+}
+
+.navbar-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    margin-left: auto;
+
+}
+
+.navbar-menu ul li {
+    margin-top: 10px;
+    margin-left: 15px;
+
+}
+
+.navbar-menu ul li a {
+    color: white;
+    text-decoration: none;
+    margin-left: auto;
+    font-size: 0.9em;
+}
+
+.navbar-menu ul li a:hover {
+    text-decoration: underline;
+}
+
+
+.player-container {
+    text-align: center;
+    padding: 20px;
+    background: #00000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+
+/* Player score group styles */
+.player-score-group {
+        background: #00000000;
+        font-size: 16px;
+        flex: 1 1 calc(25% - 20px);
+        flex-direction: column;
+        padding: 20px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+.player-score-group input {
+    width: 45%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.player-score-group .name-label {
+    align-self: flex-start;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #fff;
+    margin-left: auto;
+}
+
+.player-score-group .score-label {
+    font-size: 5.5em;
+    color: #fff;
+    margin-right: auto;
+}
+
+/* Current player highlight */
+.current-player {
+    text-align: center;
+    padding: 20px;
+    background: #00000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: auto;
+    height: auto;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    background-color: #00000000;
+}
+
+/* Reverse button styles */
+#reverse-button {
+    background-color: #ff6666;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: auto;
+}
+
+#reverse-button:hover {
+    background-color: #ff3333;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+
+}
+
+.button-group button {
+    padding: 3px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #28a745;
+    flex: 1 1 auto;
+    width: auto;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-group button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.button-group button.active:hover {
+    background-color: #007bff;
+    /* Keep the active color on hover */
+    color: white;
+    /* Maintain text color */
+}
+
+.button-group button:hover {
+    background-color: #218838;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+
+
+}
+
+.form-group button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    width: 10%;
+    text-align: center;
+}
+
+.player-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.player-input-group input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.player-input-group button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #d91919;
+    color: white;
+    cursor: pointer;
+}
+
+.player-input-group button:hover {
+    background-color: #892626;
+}

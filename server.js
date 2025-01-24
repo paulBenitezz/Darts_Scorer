@@ -112,6 +112,18 @@ app.post('/update-score', async (req, res) => {
     }
 });
 
+app.post('/reverse-update-score', async (req, res) => {
+    const { playerId, score } = req.body;
+    try {
+        const result = await client.query('UPDATE players SET score = score + $1 WHERE player_id = $2 RETURNING score', [score, playerId]);
+        console.log(`Reversed score for player ${playerId}:`, result.rows[0].score); // Debugging log
+        res.json({ score: result.rows[0].score });
+    } catch (err) {
+        console.error('Error reversing score:', err);
+        res.status(500).send('Error reversing score. Please try again.');
+    }
+})
+
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
