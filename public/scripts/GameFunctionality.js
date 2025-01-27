@@ -1,5 +1,5 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
-
+import { showBanner, handlePlayerBanner } from './GameLooks.js';
 
 let currentPlayerIndex = 0;
 let previousPlayerIndex = -1;
@@ -110,7 +110,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
             console.log(`player ${playersData[index].player_id} score: ${currentScore}`);
             if (didPlayerReachZero(playersData[index]) || redemptionMode) {
                 if (isPlayingAlone) {
-                    alert(`${player.name} wins! Game Over!`);
+                    showBanner(`${player.name} wins! Game Over!`);
                     window.location.href = '../index.html';
                     return;
                 }
@@ -121,23 +121,27 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
                     redemptionTurns = turns;
                     originalWinnerIndex = winnerIndex;
                     winnersList.push(player.name);
-                    alert(`${player.name} wins! Redemption mode activated.`);
+                    handlePlayerBanner(player);
                 } else {
                     redemptionTurns--;
                     if (player.score === 0) {
-                        alert(`${player.name} reached 0!`);
+                        showBanner(`${player.name} reached 0!`);
                         winnersList.push(player.name);
                     }
                     if (redemptionTurns === 0) {
                         if (winnersList.length > 1) {
                             let nameList = winnersList.join(', ');
-                            alert(`${nameList} win! Game Over!`);
+                            showBanner(`${nameList} win! Game Over!`);
+                            setTimeout(() => {
+                                window.location.href = '../index.html';
+                            }, 2500);
                             // handle sudden death
                         } else {
-                            alert(`${playersData[originalWinnerIndex].name} wins! Game Over!`);
+                            showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`);
                             redemptionMode = false;
-                            window.location.href = '../index.html';
-                        }
+                            setTimeout(() => {
+                                window.location.href = '../index.html';
+                            }, 2500);                        }
                     }
 
                 }
@@ -155,10 +159,12 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
 }
 
 function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
-    const reverseButton = document.createElement('button');
+    const reverseButton = document.createElement('i');
     reverseButton.id = 'reverse-button';
+    reverseButton.className = "fa-solid fa-rotate-left";
+    reverseButton.title = 'Reverse';
+   // reverseButton.title = 'Reverse';
     console.log('Creating reverse button');
-    reverseButton.textContent = 'Reverse';
     reverseButton.addEventListener('click', async () => {
         if (scoreStack[playerIndex].length > 0) {
 
@@ -175,6 +181,17 @@ function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
 
             if (!isPlayingAlone) {
                 createScoreInput(player, playerDiv, playerIndex, scoreLabel);
+            }
+
+            if (redemptionMode) {
+                redemptionTurns++;
+                if (player.score !== 0) {
+                    redemptionMode = false;
+                    redemptionTurns = 0;
+                    originalWinnerIndex = -1;
+                    winnersList = [];
+                    console.log('Redemption mode deactivated');
+                }
             }
 
         } else {
