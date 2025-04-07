@@ -6,6 +6,10 @@ body {
     padding: 0;
 }
 
+h1 {
+    color:#fff;
+}
+
 .container {
     text-align: center;
     padding: 20px;
@@ -88,6 +92,7 @@ body {
     background: #00000000;
     font-size: 16px;
     flex: 1 1 calc(25% - 20px);
+    position: relative;
     flex-direction: column;
     height: auto;
     border-radius: 10px;
@@ -97,7 +102,21 @@ body {
     align-items: center;
     box-sizing: border-box;
     text-align: center;
+    border-right: 2px solid #ccc;
+    margin-bottom: 50px;
+    padding-bottom: 20px;
 }
+
+
+.player-score-group:last-child {
+    border-right: none;
+}
+
+.player-score-group:nth-child(4) {
+    border-right: none;
+}
+
+
 
 .player-score-group .score-label {
     font-size: 5.5em;
@@ -110,6 +129,15 @@ body {
 .player-score-group .name-label {
     align-self: flex-start;
     font-size: 1.5em;
+    color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    height: 30px;
+    padding-bottom: 20px;
+}
+
+.player-score-group .out-shot-label {
+    font-size: 1.2em;
     color: #fff;
     margin-left: auto;
     margin-right: auto;

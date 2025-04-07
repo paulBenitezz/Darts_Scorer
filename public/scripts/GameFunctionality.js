@@ -1,5 +1,6 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
-import { showBanner, handlePlayerBanner } from './GameLooks.js';
+import { showBanner, handlePlayerBanner, showWinModal } from './GameLooks.js';
+import { getCheckoutShot } from './CheckoutShot.js';
 
 let currentPlayerIndex = 0;
 let previousPlayerIndex = -1;
@@ -10,6 +11,7 @@ let originalWinnerIndex = -1;
 let winnersList = [];
 let scoreStack = [];
 let isPlayingAlone = false;
+let gametype = -1;
 
 async function fetchGameData() {
     console.log('fetchGameData function called'); // Debugging log
@@ -35,9 +37,8 @@ async function fetchGameData() {
             let playerDiv = document.createElement('div');
             playerDiv.className = 'player-score-group';
             playerDiv.id = `player-${index}`;
-            console.log('playerDiv:', playerDiv); // Debugging log
             playerDiv.dataset.playerId = player.player_id;
-
+            gametype = player.gametype;
 
             const scoreLabel = document.createElement('label');
             scoreLabel.textContent = player.score;
@@ -49,22 +50,25 @@ async function fetchGameData() {
             nameLabel.className = 'name-label';
             playerDiv.appendChild(nameLabel);
 
+            const outShotLabel = document.createElement('label');
+            outShotLabel.className = 'out-shot-label';
+            getCheckoutShot(player.score, outShotLabel);
+            playerDiv.appendChild(outShotLabel);
+
             if (index === currentPlayerIndex) {
-                createScoreInput(player, playerDiv, index, scoreLabel);
+                createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel);
             }
             container.appendChild(playerDiv);
             scoreStack[index] = [];
-
         });
 
         highlightCurrentPlayer();
-
     } catch (err) {
         console.error('Error fetching game data.', err);
     }
 }
 
-function createScoreInput(player, playerDiv, index, scoreLabel) {
+function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
     const existingScoreInput = document.getElementById('floating-input');
 
     if (existingScoreInput) {
@@ -92,12 +96,24 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
             }
             console.log(`new score: ${newScore}`);
             if (!isValidScore(newScore)) {
-                alert('Invalid score! Please enter a score between 0 and 180.');
+                showBanner('Invalid score! Please enter a score between 0 and 180.', 1500, '#dc3545'); // Red color for invalid score
                 return;
             }
             let currentScore = parseInt(scoreLabel.textContent, 10);
+
+            if (currentScore - newScore < 2 && currentScore - newScore != 0) {
+                showBanner('Bust!', 1500, '#dc3545');
+                previousPlayerIndex = currentPlayerIndex;
+                currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
+                highlightCurrentPlayer();
+                showReverseButton(player, previousPlayerIndex);
+                return;
+
+            }
+
             scoreLabel.textContent -= scoreInput.value;
             currentScore -= newScore;
+
 
             playerDiv.dataset.score = currentScore;
             //player.score = currentScore;
@@ -108,9 +124,9 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
 
             await updatePlayerScore(playersData[index].player_id, currentScore);
             console.log(`player ${playersData[index].player_id} score: ${currentScore}`);
-            if (didPlayerReachZero(playersData[index]) || redemptionMode) {
+            if (didPlayerReachZero(playersData[index]) || redemptionMode) { // check if player reached zero / redemption mode logic
                 if (isPlayingAlone) {
-                    showBanner(`${player.name} wins! Game Over!`);
+                    showBanner(`${player.name} wins! Game Over!`, 3000, '#28a745');
                     window.location.href = '../index.html';
                     return;
                 }
@@ -121,31 +137,45 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
                     redemptionTurns = turns;
                     originalWinnerIndex = winnerIndex;
                     winnersList.push(player.name);
-                    handlePlayerBanner(player);
+                    showBanner(`${player.name} reached 0! Redemption mode activated.`, 3000, '#28a745');
                 } else {
                     redemptionTurns--;
                     if (player.score === 0) {
-                        showBanner(`${player.name} reached 0!`);
+                        showBanner(`${player.name} reached 0!`, 3000, '#28a745');
+                        showWinModal(player, `${player.name} wins!`);
                         winnersList.push(player.name);
+                        //await saveToLeaderboard(gametype, player.player_id, player.dartCount)
                     }
                     if (redemptionTurns === 0) {
                         if (winnersList.length > 1) {
                             let nameList = winnersList.join(', ');
-                            showBanner(`${nameList} win! Game Over!`);
+                            showBanner(`${nameList} win! Game Over!`, 3000, '#28a745');
+                            //await saveToLeaderboard(player.gametype, player.player_id)
+                            console.log(`saving to leaderboard: player gametype: ${gametype}`);
+                            //showWinModal
                             setTimeout(() => {
-                                window.location.href = '../index.html';
+                               // window.location.href = '../index.html';
                             }, 2500);
                             // handle sudden death
                         } else {
-                            showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`);
+                            showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`, '#28a745');
+                            console.log(`saving to leaderboard: player gametype: ${gametype}, player id: ${player.player_id}`);
+                            showWinModal(playersData[originalWinnerIndex], `${playersData[originalWinnerIndex].name} wins!`);
+                            //await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
+                            console.log(`dart count after save: ${playersData[originalWinnerIndex].dart_count}`);
                             redemptionMode = false;
                             setTimeout(() => {
-                                window.location.href = '../index.html';
-                            }, 2500);                        }
+                                //window.location.href = '../index.html';
+                            }, 2500);                        
+                        }
                     }
 
                 }
             }
+            getCheckoutShot(currentScore, outShotLabel);
+
+            player.dart_count += 3; // increment dart count
+            console.log(`player ${player.player_id} dart_count: ${player.dart_count}`);
             previousPlayerIndex = currentPlayerIndex;
             currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
             highlightCurrentPlayer();
@@ -158,7 +188,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel) {
 
 }
 
-function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
+function createReverseButton(player, playerDiv, playerIndex, scoreLabel, outShotLabel) {
     const reverseButton = document.createElement('i');
     reverseButton.id = 'reverse-button';
     reverseButton.className = "fa-solid fa-rotate-left";
@@ -178,9 +208,12 @@ function createReverseButton(player, playerDiv, playerIndex, scoreLabel) {
             currentPlayerIndex = playerIndex;
             highlightCurrentPlayer();
             reverseButton.remove();
+            player.dart_count -= 3;
+            getCheckoutShot(player.score, outShotLabel);
+            console.log(`player ${player.player_id} dart_count after reverse: ${player.dart_count}`);
 
             if (!isPlayingAlone) {
-                createScoreInput(player, playerDiv, playerIndex, scoreLabel);
+                createScoreInput(player, playerDiv, playerIndex, scoreLabel, outShotLabel);
             }
 
             if (redemptionMode) {
@@ -214,11 +247,12 @@ function showReverseButton(player, playerIndex) {
     console.log('showReverseButton playerDiv:', playerDiv); // Debugging log
     const scoreInput = playerDiv.querySelector('input');
     const scoreLabel = playerDiv.querySelector('.score-label');
+    const outShotLabel = playerDiv.querySelector('.out-shot-label');
     if (scoreInput && !isPlayingAlone) {
         scoreInput.remove();
     }
 
-    createReverseButton(player, playerDiv, playerIndex, scoreLabel);
+    createReverseButton(player, playerDiv, playerIndex, scoreLabel, outShotLabel);
 }
 
 function highlightCurrentPlayer() {
@@ -231,7 +265,7 @@ function highlightCurrentPlayer() {
                 scoreInput.readOnly = false;
                 scoreInput.focus();
             } else {
-                createScoreInput(playersData[index], playerDiv, index, playerDiv.querySelector('label'));
+                createScoreInput(playersData[index], playerDiv, index, playerDiv.querySelector('.score-label'), playerDiv.querySelector('.out-shot-label'));
             }
         } else {
             playerDiv.classList.remove('current-player');
@@ -281,7 +315,43 @@ async function reverseUpdatePlayerScore(playerId, score) {
     }
 }
 
+async function saveToLeaderboard(gametype, playerId, dartCount) {
+    try {
+        console.log(`sending to leaderboard: gametype: ${gametype}, playerId: ${playerId}, dartCount: ${dartCount}`);
+        const response = await fetch('/save-to-leaderboard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ gametype, playerId, dartCount })
+        });
+        const result = await response.json();
+        console.log('Saved to leaderboard:', result);
+    } catch (err) {
+        console.error('Error saving to leaderboard:', err);
+    }
+}
+
+async function handleDartCountUpdate(playerId, dartCount) {
+    try {
+        const response = await fetch('/update-dart-count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ playerId, dartCount })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(`Updated dart count for player ${playerId}: ${data.dartCount}`);
+    } catch (err) {
+        console.error('Error updating dart count:', err);
+    }
+}
 
 
 window.onload = fetchGameData;
 
+export { handleDartCountUpdate, saveToLeaderboard };

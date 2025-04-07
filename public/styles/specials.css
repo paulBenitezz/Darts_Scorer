@@ -4,7 +4,6 @@
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #28a745;
     color: #333;
     text-align: center;
     padding: 15px;
@@ -29,8 +28,144 @@
     border-radius: 5px;
     cursor: pointer;
     margin-left: 20px;
+    width: auto;
 }
 
 .restart-button:hover {
     background-color: #ff3333;
+}
+
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    z-index: 1001;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 125px;
+    opacity: 95%;
+    border: 1px solid #888;
+    width: 80%;
+    text-align: center;
+}
+
+.modal-content label {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.play-again-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.play-again-button:hover {
+    background-color: #45a049;
+}
+
+
+.dart-count-button {
+    background-color: #008CBA;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    width: auto;
+    display: inline-block;
+}
+
+.dart-count-button:hover {
+    background-color: #007B9A;
+}
+
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    color: #fff;
+    gap: 10px;
+    padding: 50px;
+    background-color: #2c3e50;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+th {
+    padding: 10px 20px;
+}
+.leaderboardTable {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: separate;
+    /* Use separate borders to allow spacing */
+    border-spacing: 500px;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: center;
+    color: #fff;
+}
+
+.leaderboardTable tr {
+    padding: 20px;
+}
+
+.leaderboardTable th,
+.leaderboardTable td {
+    padding: 12px 200px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.leaderboardTable th {
+    background-color: #34495e;
+    color: #fff;
+    width: 500px;
+    padding: 10px 20px;
+}
+
+.leaderboardTable tr:nth-child(even) {
+    background-color: #2c3e50;
+}
+
+.leaderboardTable tr:hover {
+    background-color: #1abc9c;
+    color: #fff;
 }

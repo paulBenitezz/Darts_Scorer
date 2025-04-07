@@ -82,7 +82,7 @@ gameSetupForm.addEventListener('submit', async (e) => {
 
         const result = await response.text();
         console.log('Response:', result); // Debugging log
-        
+        alert(result);
         if (response.ok) {
             console.log('Redirecting to play.html'); // Debugging log
             window.location.href = "play.html";

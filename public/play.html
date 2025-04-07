@@ -42,22 +42,35 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="play.html">Play</a></li>
-                    <li><a href="about.html">Leaderboards</a></li>
+                    <li><a href="leaderboard.html">Leaderboards</a></li>
+                    <button id="restart-button" class="restart-button">Restart Game</button>
                 </ul>
             </div>
-            <!--<button id="restart-button" class="restart-button">Restart Game</button></!-->
         </div>
-           
     </nav>
 
     <div id="banner" class="banner hidden"></div>
 
     <div class="player-container" id="playerScoresContainer"></div>
 
+    <div id="winModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="winMessage"></h2>
+            <div id="dartCountButtons">
+                <label>Darts checked out in:</label>
+                <button class="dart-count-button" data-darts="1">1 Dart</button>
+                <button class="dart-count-button" data-darts="2">2 Darts</button>
+                <button class="dart-count-button" data-darts="3">3 Darts</button>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts/GameRules.js" type="module"></script>
     <script src="scripts/GameFunctionality.js" type="module"></script>
     <script src="scripts/GameLooks.js" type="module"></script>
     <script src="scripts/GameSetup.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="scripts/CheckoutShot.js" type="module"></script>
 </body>
 
 </html>
