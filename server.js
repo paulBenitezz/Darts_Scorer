@@ -176,7 +176,7 @@ app.post('/save-to-leaderboard', async (req, res) => {
 
 app.get('/get-leaderboard', async (req, res) => {
     try {
-        const result = await client.query('SELECT player_name, gameType, dart_count FROM winner ORDER BY dart_count ASC');
+        const result = await client.query('SELECT player_name, gameType, dart_count, date FROM winner ORDER BY dart_count ASC');
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching leaderboard data:', err);
