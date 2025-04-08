@@ -59,5 +59,27 @@ async function showWinModal(winningPlayer, message) {
   
 }
 
-export { showBanner, handlePlayerBanner, showWinModal };
+async function showSuddenDeathModal(winnersList) {
+    console.log("sudden death modal");
+    const modal = document.getElementById('suddenDeathModal');
+    const message = document.getElementById('suddenDeathMessage');
+    const buttons = document.getElementById('playerButtons')
+    modal.classList.remove('hidden');
+    message.textContent = `Sudden Death! ${winnersList} are in sudden death!`;
+    playerButtons.innerHTML = ''; // Clear previous buttons
+    
+    winnersList.forEach(player => {
+        console.log(`Printing player ${player}`)
+        const playerLabel = document.createElement('div');
+        playerLabel.textContent = player.name;
+        playerLabel.className = 'winner-label';
+        playerButtonsContainer.appendChild(playerLabel);
+        
+    });
+    
+    modal.style.display = 'block';
+    
+}
+
+export { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal };
 

@@ -68,7 +68,7 @@ app.post('/submit', async (req, res) => {
         }
 
         await client.query('COMMIT');
-        res.send('Game data saved successfully!');
+        res.status(204).send();
     } catch (err) {
         await client.query('ROLLBACK');
         console.error('Error saving game data:', err);
@@ -85,9 +85,12 @@ app.post('/reset-game', async (req, res) => {
             SET score = (
                 SELECT gameType
                 FROM game
-                WHERE game.player_id = players.player_id
+                WHERE game.game_id = players.game_id
             )
+            WHERE game_id IN (SELECT game_id FROM game ORDER BY game_id DESC LIMIT 1)
+
         `);
+        
         await client.query('UPDATE players SET dart_count = 0');
         
 

@@ -1,5 +1,5 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
-import { showBanner, handlePlayerBanner, showWinModal } from './GameLooks.js';
+import { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal } from './GameLooks.js';
 import { getCheckoutShot } from './CheckoutShot.js';
 
 let currentPlayerIndex = 0;
@@ -149,14 +149,15 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                     if (redemptionTurns === 0) {
                         if (winnersList.length > 1) {
                             let nameList = winnersList.join(', ');
-                            showBanner(`${nameList} win! Game Over!`, 3000, '#28a745');
+                            showBanner(`${nameList} reached 0`, 3000, '#28a745');
                             //await saveToLeaderboard(player.gametype, player.player_id)
                             console.log(`saving to leaderboard: player gametype: ${gametype}`);
-                            //showWinModal
+                            showSuddenDeathModal(nameList);
                             setTimeout(() => {
                                // window.location.href = '../index.html';
                             }, 2500);
-                            // handle sudden death
+                            // HANDLE SUDDEN DEATH
+                            
                         } else {
                             showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`, '#28a745');
                             console.log(`saving to leaderboard: player gametype: ${gametype}, player id: ${player.player_id}`);

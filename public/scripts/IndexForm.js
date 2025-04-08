@@ -1,4 +1,5 @@
 // JavaScript for button group functionality
+import { showBanner } from "./GameLooks.js";
 const gameButtons = document.getElementById('gameButtons');
 const buttons = gameButtons.querySelectorAll('button');
 let selectedGame = null;
@@ -47,7 +48,7 @@ addPlayerButton.addEventListener('click', () => {
         playerInputs.appendChild(div);
 
     } else {
-        alert('Maximum of 8 players allowed.');
+        showBanner('Maximum of 8 players allowed.', 1500, '#dc3545');
     }
 });
 
@@ -61,12 +62,12 @@ gameSetupForm.addEventListener('submit', async (e) => {
     //const selectedGame = document.querySelector('input[name="gameType"]:checked')?.value;
 
     if (playerNames.length < 1) {
-        alert('At least 1 player is required!');
+        showBanner('At least 1 player is required!', 1500, '#dc3545');
         return;
     }
 
     if (!selectedGame) {
-        alert('Please select a game type!');
+        showBanner('Please select a game type!', 1500, '#dc3545');
         return;
     }
 
@@ -82,14 +83,14 @@ gameSetupForm.addEventListener('submit', async (e) => {
 
         const result = await response.text();
         console.log('Response:', result); // Debugging log
-        alert(result);
+        
         if (response.ok) {
             console.log('Redirecting to play.html'); // Debugging log
             window.location.href = "play.html";
         }
     } catch (err) {
         console.error('Error submitting form:', err);
-        alert('Error submitting form. Please try again.');
+        showBanner('Error submitting form. Please try again.', 1500, '#dc3545');
     }
 });
 
