@@ -26,7 +26,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const date = new Date(entry.date);
             if (!isNaN(date)) {
-                dateCell.textContent = date.toLocaleDateString();
+                dateCell.textContent = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
             } else {
                 dateCell.textContent = 'Invalid Date';
             }

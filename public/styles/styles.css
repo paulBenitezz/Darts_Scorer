@@ -10,6 +10,9 @@ h1 {
     color:#fff;
 }
 
+h2 {
+    color: #333;
+}
 .container {
     text-align: center;
     padding: 20px;
@@ -278,4 +281,11 @@ button {
 
 .player-input-group button:hover {
     background-color: #892626;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 35px;
+    background-color: #333;
+
 }

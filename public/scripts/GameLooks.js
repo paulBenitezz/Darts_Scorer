@@ -19,44 +19,45 @@ function handlePlayerBanner(player) {
     // Additional logic for handling player reaching zero
 }
 
-async function showWinModal(winningPlayer, message) {
-    const modal = document.getElementById('winModal');
-    const winMessage = document.getElementById('winMessage');
-    winMessage.textContent = message;
-    modal.classList.remove('hidden');
-    modal.style.display = 'block';
-    const dartCountButtons = document.querySelectorAll('.dart-count-button'); // Ensure this is a NodeList
-    console.log(`${winningPlayer.name} total darts pre button: ${winningPlayer.dart_count}`);
+async function showWinModal(winningPlayer, message, isRedemptionMode) {
+    if (!isRedemptionMode) {
+        const modal = document.getElementById('winModal');
+        const winMessage = document.getElementById('winMessage');
+        winMessage.textContent = message;
+        modal.classList.remove('hidden');
+        modal.style.display = 'block';
+        const dartCountButtons = document.querySelectorAll('.dart-count-button'); // Ensure this is a NodeList
+        console.log(`${winningPlayer.name} total darts pre button: ${winningPlayer.dart_count}`);
 
 
-    dartCountButtons.forEach(button => {
-        button.onclick = async () => {
-            const darts = button.getAttribute('data-darts');
-            console.log(`${winningPlayer.name} checked out in ${darts} darts`);
-            // You can add logic here to save the dart count to the database if needed
-            winningPlayer.dart_count += parseInt(darts, 10);
-            console.log(`${winningPlayer.name} total darts test: ${winningPlayer.dart_count}`);
+        dartCountButtons.forEach(button => {
+            button.onclick = async () => {
+                const darts = button.getAttribute('data-darts');
+                console.log(`${winningPlayer.name} checked out in ${darts} darts`);
+                // You can add logic here to save the dart count to the database if needed
+                winningPlayer.dart_count += parseInt(darts, 10);
+                console.log(`${winningPlayer.name} total darts test: ${winningPlayer.dart_count}`);
 
-            await handleDartCountUpdate(winningPlayer.player_id, winningPlayer.dart_count);
-            console.log(`${winningPlayer.name} total darts post button: ${winningPlayer.dart_count}`);
-            dartCountButtons.forEach(btn => btn.classList.add('hidden'));
-            modal.style.display = 'none';
+                await handleDartCountUpdate(winningPlayer.player_id, winningPlayer.dart_count);
+                console.log(`${winningPlayer.name} total darts post button: ${winningPlayer.dart_count}`);
+                dartCountButtons.forEach(btn => btn.classList.add('hidden'));
+                modal.style.display = 'none';
 
-            await saveToLeaderboard(winningPlayer.gametype, winningPlayer.player_id, winningPlayer.dart_count);
-            
-            //console.log
-             restartGame();
-            // leg won
+                await saveToLeaderboard(winningPlayer.gametype, winningPlayer.player_id, winningPlayer.dart_count);
+
+                //console.log
+                restartGame();
+                // leg won
+            };
+        });
+
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
         };
-    });
-
-
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
-  
+    }
 }
 
 async function showSuddenDeathModal(winnersList) {
@@ -65,20 +66,47 @@ async function showSuddenDeathModal(winnersList) {
     const message = document.getElementById('suddenDeathMessage');
     const buttons = document.getElementById('playerButtons')
     modal.classList.remove('hidden');
-    message.textContent = `Sudden Death! ${winnersList} are in sudden death!`;
-    playerButtons.innerHTML = ''; // Clear previous buttons
-    
-    winnersList.forEach(player => {
-        console.log(`Printing player ${player}`)
-        const playerLabel = document.createElement('div');
-        playerLabel.textContent = player.name;
-        playerLabel.className = 'winner-label';
-        playerButtonsContainer.appendChild(playerLabel);
-        
-    });
-    
+    const winnerNames = formatNames(winnersList)
+    message.textContent = `\n${winnerNames} are in sudden death!`;
+    buttons.innerHTML = ''; // Clear previous buttons
     modal.style.display = 'block';
-    
+
+    winnersList.forEach(player => {
+        console.log(`Printing player ${player}`);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = player;
+        button.classList = 'player-name-button';
+        buttons.appendChild(button);
+    });
+    const winnerButtons = document.querySelectorAll('.player-name-button');
+    winnerButtons.forEach(button => {
+        button.onclick = async () => {
+            const winner = button.textContent;
+            console.log(`${winner} selected`);
+            modal.style.display = 'none';
+            
+        };
+    });
+
+}
+
+function formatNames(names) {
+    if (!names || names.length === 0) {
+        return "";
+    }
+    if (names.length === 1) {
+        return names[0];
+    }
+
+    if (names.length === 2) {
+        return names.join(" and ");
+    }
+
+    const allButLast = names.slice(0, -1).join(", ");
+    const last = names.slice(-1);
+
+    return `${allButLast}, and ${last}`;
 }
 
 export { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal };

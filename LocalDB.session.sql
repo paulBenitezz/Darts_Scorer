@@ -25,3 +25,4 @@ CREATE TABLE winner (
 
 
 ALTER TABLE players ADD COLUMN game_id INT REFERENCES game(game_id);
+ALTER TABLE game ADD COLUMN initScore INT;

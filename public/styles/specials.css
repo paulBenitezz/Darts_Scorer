@@ -132,6 +132,21 @@
     background-color: #45a049;
 }
 
+.player-name-button {
+    background-color: #008CBA;
+    color: white;
+    padding: 20px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    width: auto;
+    display: inline-block;
+}
+
+.player-name-button:hover {
+    background-color: #007B9A;
+}
 
 .dart-count-button {
     background-color: #008CBA;

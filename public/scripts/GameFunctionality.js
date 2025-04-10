@@ -108,7 +108,6 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                 highlightCurrentPlayer();
                 showReverseButton(player, previousPlayerIndex);
                 return;
-
             }
 
             scoreLabel.textContent -= scoreInput.value;
@@ -127,6 +126,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
             if (didPlayerReachZero(playersData[index]) || redemptionMode) { // check if player reached zero / redemption mode logic
                 if (isPlayingAlone) {
                     showBanner(`${player.name} wins! Game Over!`, 3000, '#28a745');
+                    showWinModal(player, `${player.name} wins!`, redemptionMode);
                     window.location.href = '../index.html';
                     return;
                 }
@@ -141,8 +141,9 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                 } else {
                     redemptionTurns--;
                     if (player.score === 0) {
+                        redemptionMode = false;
                         showBanner(`${player.name} reached 0!`, 3000, '#28a745');
-                        showWinModal(player, `${player.name} wins!`);
+                        showWinModal(player, `${player.name} wins!`, redemptionMode);
                         winnersList.push(player.name);
                         //await saveToLeaderboard(gametype, player.player_id, player.dartCount)
                     }
@@ -152,7 +153,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                             showBanner(`${nameList} reached 0`, 3000, '#28a745');
                             //await saveToLeaderboard(player.gametype, player.player_id)
                             console.log(`saving to leaderboard: player gametype: ${gametype}`);
-                            showSuddenDeathModal(nameList);
+                            showSuddenDeathModal(winnersList);
                             setTimeout(() => {
                                // window.location.href = '../index.html';
                             }, 2500);
@@ -161,7 +162,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                         } else {
                             showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`, '#28a745');
                             console.log(`saving to leaderboard: player gametype: ${gametype}, player id: ${player.player_id}`);
-                            showWinModal(playersData[originalWinnerIndex], `${playersData[originalWinnerIndex].name} wins!`);
+                            showWinModal(playersData[originalWinnerIndex], `${playersData[originalWinnerIndex].name} wins!`, redemptionMode);
                             //await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
                             console.log(`dart count after save: ${playersData[originalWinnerIndex].dart_count}`);
                             redemptionMode = false;
