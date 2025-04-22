@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/specials.css">
     <style>
-      
         button {
             background-color: #28a745;
             color: white;
@@ -19,27 +18,26 @@
         button:hover {
             background-color: #218838;
         }
-
     </style>
 </head>
 
 <body>
     <nav class="navbar">
-    <div class="header-container">
-        <div class="navbar-brand">
-            <a href="index.html">T20-darts</a>
+        <div class="header-container">
+            <div class="navbar-brand">
+                <a href="index.html">T20-darts</a>
+            </div>
+            <div class="navbar-menu">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="play.html">Play</a></li>
+                    <li><a href="leaderboard.html">Leaderboards</a></li>
+
+                </ul>
+            </div>
         </div>
-        <div class="navbar-menu">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="play.html">Play</a></li>
-                <li><a href="leaderboard.html">Leaderboards</a></li>
-                
-            </ul>
-        </div>
-    </div>
     </nav>
-    
+
     <div id="banner" class="banner hidden"></div>
 
 
@@ -68,8 +66,14 @@
             <button type="submit">Start Game</button>
         </form>
     </div>
-    <footer></footer>
-
+    <footer class="footer">
+        <p>&copy; 2025 T20-Darts. Made by paul :P</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="play.html">Play</a>
+            <a href="leaderboard.html">Leaderboards</a>
+        </div>
+    </footer>
     <script src="scripts/IndexForm.js" type="module"></script>
     <script src="scripts/GameLooks.js" type="module"></script>
 

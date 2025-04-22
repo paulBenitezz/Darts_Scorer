@@ -1,9 +1,12 @@
 /* General styles */
-body {
+html, body {
     font-family: Arial, sans-serif;
     background-color: #3e3e3e;
     margin: 0;
     padding: 0;
+    height: 100%;
+    flex-direction: column;
+    display: flex;
 }
 
 h1 {
@@ -26,6 +29,7 @@ h2 {
     margin-top: 50px;
     margin-left: auto;
     margin-right: 75px;
+    flex: 1;
 }
 
 /* Navbar styles */
@@ -283,9 +287,41 @@ button {
     background-color: #892626;
 }
 
-footer {
-    margin-top: 50px;
-    padding: 35px;
-    background-color: #333;
+.footer {
+    position: relative;
+    /* Ensure it stays in the normal document flow */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000;
+    /* Dark background color */
+    color: white;
+    /* White text color */
+    text-align: center;
+    padding: 20px 0;
+    /* Add padding for spacing */
+    font-size: 14px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+    z-index: 1000;
+    /* Ensure it appears above other elements */
+    margin-top: 200px;
+}
 
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-links a {
+    color: #1abc9c;
+    /* Light green link color */
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+.footer-links a:hover {
+    color: #16a085;
+    /* Darker green on hover */
+    text-decoration: underline;
 }
