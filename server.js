@@ -90,9 +90,9 @@ app.post('/reset-game', async (req, res) => {
             WHERE game_id IN (SELECT game_id FROM game ORDER BY game_id DESC LIMIT 1)
 
         `);
-        
+
         await client.query('UPDATE players SET dart_count = 0');
-        
+
 
         await client.query('COMMIT');
 
@@ -106,9 +106,9 @@ app.post('/reset-game', async (req, res) => {
 // new endpoint to fetch player and game data
 
 app.get('/game-data', async (req, res) => {
-    console.log('Fetching game data'); 
+    console.log('Fetching game data');
     try {
-        console.log('Before executing query'); 
+        console.log('Before executing query');
 
         const gameResult = await client.query('SELECT game_id FROM game ORDER BY game_id DESC LIMIT 1');
         if (gameResult.rows.length === 0) {
@@ -116,10 +116,19 @@ app.get('/game-data', async (req, res) => {
         }
         const gameId = gameResult.rows[0].game_id;
 
-        const playerResult = await client.query('SELECT player_id, name, score, dart_count, $1::int AS gameType FROM players WHERE game_id = $1', [gameId]);
-
-        console.log('After executing query'); 
-        console.log('Fetched game data:', playerResult.rows); 
+        const playerResult = await client.query(`
+            SELECT 
+                players.player_id, 
+                players.name, 
+                players.score, 
+                players.dart_count, 
+                game.gameType AS gameType
+            FROM players
+            INNER JOIN game ON players.game_id = game.game_id
+            WHERE players.game_id = $1
+        `, [gameId]);
+        console.log('After executing query');
+        console.log('Fetched game data:', playerResult.rows);
         res.json(playerResult.rows);
     } catch (err) {
         console.error('Error fetching game data:', err);

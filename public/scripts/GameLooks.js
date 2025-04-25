@@ -43,9 +43,8 @@ async function showWinModal(winningPlayer, message, isRedemptionMode) {
                 dartCountButtons.forEach(btn => btn.classList.add('hidden'));
                 modal.style.display = 'none';
 
+                console.log("saving after win modal");
                 await saveToLeaderboard(winningPlayer.gametype, winningPlayer.player_id, winningPlayer.dart_count);
-
-                //console.log
                 restartGame();
                 // leg won
             };

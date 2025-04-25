@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const date = new Date(entry.date);
             if (!isNaN(date)) {
                 dateCell.textContent = date.toLocaleDateString('en-US', {
-                    year: 'numeric',
+                    year: '2-digit',
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',

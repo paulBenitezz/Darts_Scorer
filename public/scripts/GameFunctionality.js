@@ -145,7 +145,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                         showBanner(`${player.name} reached 0!`, 3000, '#28a745');
                         showWinModal(player, `${player.name} wins!`, redemptionMode);
                         winnersList.push(player.name);
-                        //await saveToLeaderboard(gametype, player.player_id, player.dartCount)
+                        await saveToLeaderboard(gametype, player.player_id, player.dartCount)
                     }
                     if (redemptionTurns === 0) {
                         if (winnersList.length > 1) {
@@ -158,7 +158,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                                 console.log(`Winner: ${tmp.name}`);
                                 showWinModal(tmp, `${tmp.name} wins sudden death!`, false);
                                 console.log(`${tmp.name} wins sudden death!`);
-                                await saveToLeaderboard(gametype, tmp.player_id, tmp.dart_count);
+                                //await saveToLeaderboard(gametype, tmp.player_id, tmp.dart_count);
                             } else {
                                 console.error(`Winner ${winnerName} not found in playersData.`);
                             }
@@ -172,7 +172,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                             showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`, '#28a745');
                             console.log(`saving to leaderboard: player gametype: ${gametype}, player id: ${player.player_id}`);
                             showWinModal(playersData[originalWinnerIndex], `${playersData[originalWinnerIndex].name} wins!`, redemptionMode);
-                            await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
+                            //await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
                             console.log(`dart count after save: ${playersData[originalWinnerIndex].dart_count}`);
                             setTimeout(() => {
                                 //window.location.href = '../index.html';
@@ -184,7 +184,10 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
             }
             getCheckoutShot(currentScore, outShotLabel);
 
-            player.dart_count += 3; // increment dart count
+            if (player.score != 0) {
+                player.dart_count += 3; // increment dart count
+                console.log("player reached 0");
+            }
             console.log(`player ${player.player_id} dart_count: ${player.dart_count}`);
             previousPlayerIndex = currentPlayerIndex;
             currentPlayerIndex = nextPlayer(currentPlayerIndex, playersData);
