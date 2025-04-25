@@ -1,5 +1,5 @@
 import { updateScore, didPlayerReachZero, nextPlayer, isValidScore, handleRedemption } from './GameRules.js';
-import { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal } from './GameLooks.js';
+import { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal, handleSuddenDeath } from './GameLooks.js';
 import { getCheckoutShot } from './CheckoutShot.js';
 
 let currentPlayerIndex = 0;
@@ -151,24 +151,32 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                         if (winnersList.length > 1) {
                             let nameList = winnersList.join(', ');
                             showBanner(`${nameList} reached 0`, 3000, '#28a745');
-                            //await saveToLeaderboard(player.gametype, player.player_id)
                             console.log(`saving to leaderboard: player gametype: ${gametype}`);
-                            showSuddenDeathModal(winnersList);
+                            const winner = await handleSuddenDeath(winnersList, playersData);
+                            const tmp = playersData.find(player => player.name === winner)
+                            if (tmp) {
+                                console.log(`Winner: ${tmp.name}`);
+                                showWinModal(tmp, `${tmp.name} wins sudden death!`, false);
+                                console.log(`${tmp.name} wins sudden death!`);
+                                await saveToLeaderboard(gametype, tmp.player_id, tmp.dart_count);
+                            } else {
+                                console.error(`Winner ${winnerName} not found in playersData.`);
+                            }
                             setTimeout(() => {
-                               // window.location.href = '../index.html';
+                                // window.location.href = '../index.html';
                             }, 2500);
                             // HANDLE SUDDEN DEATH
-                            
+
                         } else {
+                            redemptionMode = false;
                             showBanner(`${playersData[originalWinnerIndex].name} wins! Game Over!`, '#28a745');
                             console.log(`saving to leaderboard: player gametype: ${gametype}, player id: ${player.player_id}`);
                             showWinModal(playersData[originalWinnerIndex], `${playersData[originalWinnerIndex].name} wins!`, redemptionMode);
-                            //await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
+                            await saveToLeaderboard(gametype, playersData[originalWinnerIndex].player_id, playersData[originalWinnerIndex].dart_count);
                             console.log(`dart count after save: ${playersData[originalWinnerIndex].dart_count}`);
-                            redemptionMode = false;
                             setTimeout(() => {
                                 //window.location.href = '../index.html';
-                            }, 2500);                        
+                            }, 2500);
                         }
                     }
 
@@ -195,7 +203,7 @@ function createReverseButton(player, playerDiv, playerIndex, scoreLabel, outShot
     reverseButton.id = 'reverse-button';
     reverseButton.className = "fa-solid fa-rotate-left";
     reverseButton.title = 'Reverse';
-   // reverseButton.title = 'Reverse';
+    // reverseButton.title = 'Reverse';
     console.log('Creating reverse button');
     reverseButton.addEventListener('click', async () => {
         if (scoreStack[playerIndex].length > 0) {

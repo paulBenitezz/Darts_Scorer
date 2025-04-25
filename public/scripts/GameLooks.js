@@ -71,24 +71,34 @@ async function showSuddenDeathModal(winnersList) {
     buttons.innerHTML = ''; // Clear previous buttons
     modal.style.display = 'block';
 
-    winnersList.forEach(player => {
-        console.log(`Printing player ${player}`);
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = player;
-        button.classList = 'player-name-button';
-        buttons.appendChild(button);
-    });
-    const winnerButtons = document.querySelectorAll('.player-name-button');
-    winnerButtons.forEach(button => {
-        button.onclick = async () => {
-            const winner = button.textContent;
-            console.log(`${winner} selected`);
-            modal.style.display = 'none';
-            
-        };
-    });
+    return new Promise((resolve) => {
+        winnersList.forEach(player => {
+            console.log(`Printing player ${player}`);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = player;
+            button.classList = 'player-name-button';
+            buttons.appendChild(button);
 
+            // Add click event to resolve the promise with the selected player
+            button.onclick = () => {
+                console.log(`${player} selected`);
+                modal.style.display = 'none';
+                resolve(player); // Resolve the promise with the selected player's name
+            };
+        });
+    });
+}
+
+async function handleSuddenDeath(winnersList) {
+    try {
+        const winner = await showSuddenDeathModal(winnersList);
+        console.log(`Selected winner for sudden death: ${winner}`);
+        return winner;
+    } catch (err) {
+        console.error('Error handling sudden death:', err);
+    }
+  
 }
 
 function formatNames(names) {
@@ -109,5 +119,5 @@ function formatNames(names) {
     return `${allButLast}, and ${last}`;
 }
 
-export { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal };
+export { showBanner, handlePlayerBanner, showWinModal, showSuddenDeathModal, handleSuddenDeath };
 

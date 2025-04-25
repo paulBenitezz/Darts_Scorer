@@ -106,9 +106,9 @@ app.post('/reset-game', async (req, res) => {
 // new endpoint to fetch player and game data
 
 app.get('/game-data', async (req, res) => {
-    console.log('Fetching game data'); // Debugging log
+    console.log('Fetching game data'); 
     try {
-        console.log('Before executing query'); // Debugging log
+        console.log('Before executing query'); 
 
         const gameResult = await client.query('SELECT game_id FROM game ORDER BY game_id DESC LIMIT 1');
         if (gameResult.rows.length === 0) {
@@ -118,8 +118,8 @@ app.get('/game-data', async (req, res) => {
 
         const playerResult = await client.query('SELECT player_id, name, score, dart_count, $1::int AS gameType FROM players WHERE game_id = $1', [gameId]);
 
-        console.log('After executing query'); // Debugging log
-        console.log('Fetched game data:', playerResult.rows); // Debugging log
+        console.log('After executing query'); 
+        console.log('Fetched game data:', playerResult.rows); 
         res.json(playerResult.rows);
     } catch (err) {
         console.error('Error fetching game data:', err);
