@@ -145,7 +145,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                         showBanner(`${player.name} reached 0!`, 3000, '#28a745');
                         showWinModal(player, `${player.name} wins!`, redemptionMode);
                         winnersList.push(player.name);
-                        await saveToLeaderboard(gametype, player.player_id, player.dartCount)
+                        //await saveToLeaderboard(gametype, player.player_id, player.dartCount)
                     }
                     if (redemptionTurns === 0) {
                         if (winnersList.length > 1) {
@@ -158,7 +158,7 @@ function createScoreInput(player, playerDiv, index, scoreLabel, outShotLabel) {
                                 console.log(`Winner: ${tmp.name}`);
                                 showWinModal(tmp, `${tmp.name} wins sudden death!`, false);
                                 console.log(`${tmp.name} wins sudden death!`);
-                                //await saveToLeaderboard(gametype, tmp.player_id, tmp.dart_count);
+                                // await saveToLeaderboard(gametype, tmp.player_id, tmp.dart_count);
                             } else {
                                 console.error(`Winner ${winnerName} not found in playersData.`);
                             }

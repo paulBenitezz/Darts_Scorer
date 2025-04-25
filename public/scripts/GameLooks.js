@@ -44,8 +44,9 @@ async function showWinModal(winningPlayer, message, isRedemptionMode) {
                 modal.style.display = 'none';
 
                 console.log("saving after win modal");
+                console.log(`Winning player: ${winningPlayer.gametype}, ${winningPlayer.player_id}, ${winningPlayer.dart_count}`);
                 await saveToLeaderboard(winningPlayer.gametype, winningPlayer.player_id, winningPlayer.dart_count);
-                restartGame();
+                //restartGame();
                 // leg won
             };
         });
